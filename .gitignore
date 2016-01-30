@@ -25,6 +25,6 @@ Makefile*
 *.qmlproject.user
 *.qmlproject.user.*
 tmp/*
-build-*
+build-*/*
 pycurl-*/build
 
