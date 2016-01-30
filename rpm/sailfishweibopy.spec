@@ -4,11 +4,19 @@
 #
 
 Name:       sailfishweibopy
+
 # >> macros
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 # << macros
+
 %define sailfishweibo /usr/share/harbour-sailfish_sinaweibo
 %define pycurl  /usr/share/doc/pycurl
+
+%{!?qtc_qmake:%define qtc_qmake %qmake}
+%{!?qtc_qmake5:%define qtc_qmake5 %qmake5}
+%{!?qtc_make:%define qtc_make make}
+%{?qtc_builddir:%define _builddir %qtc_builddir}
+
 Summary:    login module for SailfishWeibo
 Version:    0.2
 Release:    2
@@ -16,16 +24,22 @@ Group:      Python
 License:    LGPL
 URL:        https://github.com/SunRain/SailfishWeibo
 Source0:    %{name}-%{version}.tar.bz2
-BuildRequires:   python3-devel
-BuildRequires:   gcc
-BuildRequires:	 libcurl-devel
-BuildRequires:   openssl-devel
-Requires:        openssl-libs
-Requires:        libcurl
-
+#Source100:  sailfishweibopy.yaml
+Requires:   sailfishsilica-qt5 >= 0.10.9
+Requires:   openssl-libs
+Requires:   libcurl
+Requires:   pyotherside-qml-plugin-python3-qt5
+BuildRequires:  pkgconfig(sailfishapp) >= 1.0.2
+BuildRequires:  pkgconfig(Qt5Core)
+BuildRequires:  pkgconfig(Qt5Qml)
+BuildRequires:  pkgconfig(Qt5Quick)
+BuildRequires:  python3-devel
+BuildRequires:  gcc
+BuildRequires:  libcurl-devel
+BuildRequires:  openssl-devel
 
 %description
-This module provides Python bindings for the cURL library.
+login module for SailfishWeibo
 
 
 %prep
@@ -35,11 +49,12 @@ This module provides Python bindings for the cURL library.
 # << setup
 
 %build
-
 # >> build pre
 # << build pre
 
+%qtc_qmake5
 
+%qtc_make %{?_smp_mflags}
 
 # >> build post
 # << build post
@@ -47,27 +62,20 @@ This module provides Python bindings for the cURL library.
 %install
 rm -rf %{buildroot}
 export PYCURL_SSL_LIBRARY=openssl
-#python3 -m pip install pycurl
-cd pycurl-7.19.5.3 && python3 setup.py --with-ssl install --root $RPM_BUILD_ROOT
-mkdir -p %{buildroot}%{sailfishweibo}/qml/
-cp -r $RPM_BUILD_DIR/qml/* %{buildroot}%{sailfishweibo}/qml/
+# >> install pre
+# << install pre
+%qmake5_install
+
 # >> install post
 # << install post
 
-%pre
-# >> pre
-# << pre
-
-%preun
-# >> preun
-# << preun
 %postun
 rm -rf /usr/lib/python3.4/site-packages/curl
 rm -rf /usr/lib/python3.4/site-packages/pycurl*
+
 %files
 %defattr(-,root,root,-)
 /usr/lib/python3.4/site-packages/*
-%doc %{pycurl}/*
 %{sailfishweibo}
 # >> files
 # << files
