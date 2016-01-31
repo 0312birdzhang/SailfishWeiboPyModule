@@ -14,6 +14,36 @@ Page {
     signal loginSucceed()
     signal loginFailed(string fail)
 
+    CookieDataProvider {
+        id: cookie;
+        onPreLoginSuccess: {
+            captchaImg.source = cookie.captchaImgUrl;
+            captchaImg.visible = true;
+            captchaImg.enabled = true;
+        }
+        onPreLoginFailure: { //str
+            errorLabel.text = qsTr("Try hack login failure on prelogin, error code is")
+            + "[" + str +"]."
+        }
+        onLoginSuccess: {
+            console.log("Hack login success, start manual login now");
+//            py.login(api_key,api_secret,redirect_uri,userName.text,password.text)
+            doPyLogin()
+        }
+        onLoginFailure: { //str
+            console.log("Try hack login failure [" + str +"], start manual login now");
+//            py.login(api_key,api_secret,redirect_uri,userName.text,password.text)
+            doPyLogin()
+        }
+    }
+
+    Component.onCompleted: {
+        cookie.preLogin();
+    }
+    function doPyLogin() {
+//        py.login(api_key,api_secret,redirect_uri,userName.text,password.text)
+    }
+
     SilicaFlickable {
         anchors.fill: parent
 
@@ -100,10 +130,40 @@ Page {
                         label: qsTr("Password")
                         EnterKey.iconSource: "image://theme/icon-m-enter-next"
                         EnterKey.onClicked: {
+                            if (captchaImg.visible)
+                                submitButton.focus
+                            else
+                                cap.focus = true
+//                            errorLabel.visible = false;
+//                            busyIndicator.running = true;
+//                            py.login(api_key,api_secret,redirect_uri,userName.text,password.text)
+                        }
+                    }
+                    Image {
+                        id: captchaImg
+                        width: parent.width *0.8
+                        height: Theme.itemSizeSmall
+                        x: Theme.horizontalPageMargin
+                        fillMode: Image.PreserveAspectFit
+                        visible: false;
+                        enabled: false;
+                    }
+                    TextField {
+                        id:cap
+                        width:pyLoginPage.width - Theme.paddingLarge*4
+                        height:implicitHeight
+                        visible: captchaImg.visible
+                        enabled: captchaImg.visible
+                        echoMode: TextInput.Password
+                        font.pixelSize: Theme.fontSizeMedium
+                        placeholderText: qsTr("Enter captcha")
+                        label: qsTr("Captcha")
+                        EnterKey.iconSource: "image://theme/icon-m-enter-next"
+                        EnterKey.onClicked: {
                             submitButton.focus = true
-                            errorLabel.visible = false;
-                            busyIndicator.running = true;
-                            py.login(api_key,api_secret,redirect_uri,userName.text,password.text)
+//                            errorLabel.visible = false;
+//                            busyIndicator.running = true;
+//                            py.login(api_key,api_secret,redirect_uri,userName.text,password.text)
                         }
                     }
                 }
@@ -116,11 +176,15 @@ Page {
                 onClicked: {
                     errorLabel.visible = false;
                     busyIndicator.running = true;
-                    py.login(api_key,api_secret,redirect_uri,userName.text,password.text)
+//                    py.login(api_key,api_secret,redirect_uri,userName.text,password.text)
+                    cookie.userName = userName.text
+                    cookie.passWord = password.text
+                    cookie.captcha = cap.text
+                    cookie.login()
 
+                    py.login(api_key,api_secret,redirect_uri,userName.text,password.text)
                 }
             }
-
         }
 
         Label {
