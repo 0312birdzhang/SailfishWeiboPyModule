@@ -35,6 +35,9 @@ Here's how you configure Qt Creator to build the project in windows:
 		3. qmake
 		4. make
 
+#PS:
+Using release building mode in QtCreator, or you may confront some problems!!!!
+
 
 # 旗鱼微博python模块
 
@@ -71,3 +74,6 @@ Here's how you configure Qt Creator to build the project in windows:
 		2. 自定义处理步骤
 		3. qmake
 		4. make
+		
+#PS:
+使用Release模式编译，否则可能会遇到一些bug
