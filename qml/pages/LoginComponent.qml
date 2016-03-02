@@ -56,7 +56,7 @@ Page {
                 text: qsTr("Manual Autheticator")
                 onClicked: {
                     //pageStack.replace("qrc:/pages/LoginPage.qml");
-                    toLoginPage();
+                    wbFunc.toLoginPage();
                 }
             }
             MenuItem {
@@ -69,7 +69,7 @@ Page {
                 text: qsTr("Help")
                 onClicked: {
                     //pageStack.replace("qrc:/pages/LoginPage.qml");
-                    toLoginPage();
+                    wbFunc.toLoginPage();
                 }
             }
         }
@@ -127,7 +127,7 @@ Page {
                         EnterKey.iconSource: "image://theme/icon-m-enter-next"
                         EnterKey.onClicked: {
                             if (captchaImg.visible)
-                                submitButton.focus
+                                submitButton.focus = true
                             else
                                 cap.focus = true
 //                            errorLabel.visible = false;
@@ -210,7 +210,7 @@ Page {
             tokenProvider.uid = uid;
             console.log("Successed!")
             //pyLoginPage.loginSucceed();
-            toIndexPage();
+            wbFunc.toIndexPage();
           }else{
             busyIndicator.running = false;
             errorLabel.visible = true;
